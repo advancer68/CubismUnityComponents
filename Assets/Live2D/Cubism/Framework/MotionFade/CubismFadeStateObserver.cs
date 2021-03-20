@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 using System.Collections.Generic;
@@ -27,22 +27,22 @@ namespace Live2D.Cubism.Framework.MotionFade
         private List<CubismFadePlayingMotion> _playingMotions;
 
         /// <summary>
-        /// State that attatched this is default.
+        /// State that attached this is default.
         /// </summary>
         private bool _isDefaulState;
 
         /// <summary>
-        /// Lyaer index that attatched this.
+        /// Layer index that attached this.
         /// </summary>
         private int _layerIndex;
 
         /// <summary>
-        /// Weight of layer that attatched this.
+        /// Weight of layer that attached this.
         /// </summary>
         private float _layerWeight;
 
         /// <summary>
-        /// State that attatched this is transition finished.
+        /// State that attached this is transition finished.
         /// </summary>
         private bool _isStateTransitionFinished;
 
@@ -158,20 +158,29 @@ namespace Live2D.Cubism.Framework.MotionFade
             }
 
             // Set playing motions end time.
-            for (var i = 0; i < _playingMotions.Count; ++i)
+            if ((_playingMotions.Count > 0) && (_playingMotions[_playingMotions.Count - 1].Motion != null))
             {
-                var motion = _playingMotions[i];
+                var motion = _playingMotions[_playingMotions.Count - 1];
 
-                if (motion.Motion == null)
-                {
-                    continue;
-                }
+                var time = Time.time;
 
-                var newEndTime = Time.time + motion.Motion.FadeOutTime;
+                var newEndTime = time + motion.Motion.FadeOutTime;
 
                 motion.EndTime = newEndTime;
 
-                _playingMotions[i] = motion;
+
+                while (motion.IsLooping)
+                {
+                    if ((motion.StartTime + motion.Motion.MotionLength) >= time)
+                    {
+                        break;
+                    }
+
+                    motion.StartTime += motion.Motion.MotionLength;
+                }
+
+
+                _playingMotions[_playingMotions.Count - 1] = motion;
             }
 
             for (var i = 0; i < animatorClipInfo.Length; ++i)
@@ -188,7 +197,7 @@ namespace Live2D.Cubism.Framework.MotionFade
                         continue;
                     }
 
-                    instanceId = events[k].intParameter; 
+                    instanceId = events[k].intParameter;
                     break;
                 }
 
@@ -214,6 +223,8 @@ namespace Live2D.Cubism.Framework.MotionFade
                 playingMotion.EndTime = (playingMotion.Motion.MotionLength <= 0)
                                         ? -1
                                         : playingMotion.StartTime + playingMotion.Motion.MotionLength;
+                playingMotion.IsLooping = animatorClipInfo[i].clip.isLooping;
+                playingMotion.Weight = 0.0f;
 
                 _playingMotions.Add(playingMotion);
             }

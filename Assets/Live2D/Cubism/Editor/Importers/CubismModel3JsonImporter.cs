@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -209,13 +209,22 @@ namespace Live2D.Cubism.Editor.Importers
             // Update model prefab.
             else
             {
+                var cubismModel = ModelPrefab.FindCubismModel();
+                if (cubismModel.Moc == null)
+                {
+                    CubismModel.ResetMocReference(cubismModel,
+                        AssetDatabase.LoadAssetAtPath<CubismMoc>(
+                            AssetPath.Replace(".model3.json", ".asset")));
+                }
+
+
                 // Copy all user data over from previous model.
                 var source = Object.Instantiate(ModelPrefab).FindCubismModel();
 
 
                 CopyUserData(source, model);
                 Object.DestroyImmediate(source.gameObject, true);
-                
+
 
                 // Trigger events.
                 CubismImporter.SendModelImportEvent(this, model);

@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -50,7 +50,8 @@ namespace Live2D.Cubism.Framework.HarmonicMotion
         /// <summary>
         /// Model has update controller component.
         /// </summary>
-        private bool _hasUpdateController = false;
+        [HideInInspector]
+        public bool HasUpdateController { get; set; }
 
 
         /// <summary>
@@ -74,7 +75,23 @@ namespace Live2D.Cubism.Framework.HarmonicMotion
             }
 
             // Get cubism update controller.
-            _hasUpdateController = (GetComponent<CubismUpdateController>() != null);
+            HasUpdateController = (GetComponent<CubismUpdateController>() != null);
+        }
+
+        /// <summary>
+        /// Called by cubism update controller. Order to invoke OnLateUpdate.
+        /// </summary>
+        public int ExecutionOrder
+        {
+            get { return CubismUpdateExecutionOrder.CubismHarmonicMotionController; }
+        }
+
+        /// <summary>
+        /// Called by cubism update controller. Needs to invoke OnLateUpdate on Editing.
+        /// </summary>
+        public bool NeedsUpdateOnEditing
+        {
+            get { return false; }
         }
 
         /// <summary>
@@ -116,7 +133,7 @@ namespace Live2D.Cubism.Framework.HarmonicMotion
         /// </summary>
         private void LateUpdate()
         {
-            if (!_hasUpdateController)
+            if (!HasUpdateController)
             {
                 OnLateUpdate();
             }

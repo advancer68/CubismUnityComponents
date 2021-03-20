@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -58,16 +58,16 @@ namespace Live2D.Cubism.Framework.Json
         /// Expression FadeInTime
         /// </summary>
         [SerializeField]
-        public float FadeInTime;
+        public float FadeInTime = 1.0f;
 
         /// <summary>
         /// Expression FadeOutTime
         /// </summary>
         [SerializeField]
-        public float FadeOutTime;
+        public float FadeOutTime = 1.0f;
 
         /// <summary>
-        /// Exression Parameters
+        /// Expression Parameters
         /// </summary>
         [SerializeField]
         public SerializableExpressionParameter[] Parameters;
@@ -77,7 +77,7 @@ namespace Live2D.Cubism.Framework.Json
         #region Json Helpers
 
         /// <summary>
-        /// ExpressionParameter
+        /// Expression Parameter
         /// </summary>
         [Serializable]
         public struct SerializableExpressionParameter

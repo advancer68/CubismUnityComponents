@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
  *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -92,11 +92,11 @@ namespace Live2D.Cubism.Framework.Expression
 
             ret.Type = expressionData.Type;
 
-            ret.FadeInTime = (expressionData.FadeInTime <= 0.0f)
+            ret.FadeInTime = (expressionData.FadeInTime < 0.0f)
                                 ? 1.0f
                                 : expressionData.FadeInTime;
 
-            ret.FadeOutTime = (expressionData.FadeOutTime <= 0.0f)
+            ret.FadeOutTime = (expressionData.FadeOutTime < 0.0f)
                                 ? 1.0f
                                 : expressionData.FadeOutTime;
 

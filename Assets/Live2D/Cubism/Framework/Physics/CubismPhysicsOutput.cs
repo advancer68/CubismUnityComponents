@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -26,12 +26,14 @@ namespace Live2D.Cubism.Framework.Physics
         /// <param name="parameter">Parameter.</param>
         /// <param name="particles">Particles.</param>
         /// <param name="particleIndex">Index of particle.</param>
+        /// <param name="gravity">Gravity.</param>
         /// <returns>Output value.</returns>
         public delegate float ValueGetter(
             Vector2 translation,
             CubismParameter parameter,
             CubismPhysicsParticle[] particles,
-            int particleIndex
+            int particleIndex,
+            Vector2 gravity
         );
 
         /// <summary>
@@ -48,12 +50,14 @@ namespace Live2D.Cubism.Framework.Physics
         /// <param name="parameter">Parameter.</param>
         /// <param name="particles">Particles.</param>
         /// <param name="particleIndex">Index of particle.</param>
+        /// <param name="gravity">Gravity.</param>
         /// <returns>Output value.</returns>
         private float GetOutputTranslationX(
             Vector2 translation,
             CubismParameter parameter,
             CubismPhysicsParticle[] particles,
-            int particleIndex
+            int particleIndex,
+            Vector2 gravity
         )
         {
             var outputValue = translation.x;
@@ -73,12 +77,14 @@ namespace Live2D.Cubism.Framework.Physics
         /// <param name="parameter">Parameter.</param>
         /// <param name="particles">Particles.</param>
         /// <param name="particleIndex">Index of particle.</param>
+        /// <param name="gravity">Gravity.</param>
         /// <returns>Output value.</returns>
         private float GetOutputTranslationY(
             Vector2 translation,
             CubismParameter parameter,
             CubismPhysicsParticle[] particles,
-            int particleIndex
+            int particleIndex,
+            Vector2 gravity
         )
         {
             var outputValue = translation.y;
@@ -98,12 +104,14 @@ namespace Live2D.Cubism.Framework.Physics
         /// <param name="parameter">Parameter.</param>
         /// <param name="particles">Particles.</param>
         /// <param name="particleIndex">Index of particle.</param>
+        /// <param name="gravity">Gravity.</param>
         /// <returns>Output value.</returns>
         private float GetOutputAngle(
             Vector2 translation,
             CubismParameter parameter,
             CubismPhysicsParticle[] particles,
-            int particleIndex
+            int particleIndex,
+            Vector2 gravity
         )
         {
             var parentGravity = Vector2.zero;
@@ -113,7 +121,7 @@ namespace Live2D.Cubism.Framework.Physics
             {
                 if (particleIndex < 2)
                 {
-                    parentGravity = CubismPhysics.Gravity;
+                    parentGravity = gravity;
                     parentGravity.y *= -1.0f;
                 }
                 else
@@ -124,13 +132,13 @@ namespace Live2D.Cubism.Framework.Physics
             }
             else
             {
-                parentGravity = CubismPhysics.Gravity;
+                parentGravity = gravity;
                 parentGravity.y *= -1.0f;
             }
-            
+
 
             var outputValue = CubismPhysicsMath.DirectionToRadian(parentGravity, translation);
-            
+
 
             if (IsInverted)
             {
@@ -203,11 +211,11 @@ namespace Live2D.Cubism.Framework.Physics
         }
 
         /// <summary>
-        /// Parameter ID of destionation.
+        /// Parameter ID of destination.
         /// </summary>
         [SerializeField]
         public string DestinationId;
-        
+
         /// <summary>
         /// Index of particle.
         /// </summary>
@@ -239,7 +247,7 @@ namespace Live2D.Cubism.Framework.Physics
         public CubismPhysicsSourceComponent SourceComponent;
 
         /// <summary>
-        /// True if value is inverted; othewise.
+        /// True if value is inverted; otherwise.
         /// </summary>
         [SerializeField]
         public bool IsInverted;
