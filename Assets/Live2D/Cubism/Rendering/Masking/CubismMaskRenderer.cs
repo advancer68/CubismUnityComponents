@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -38,6 +38,15 @@ namespace Live2D.Cubism.Rendering.Masking
         /// </summary>
         private Material MaskMaterial { get; set; }
 
+        /// <summary>
+        /// Mask culling material.
+        /// </summary>
+        private Material MaskCullingMaterial { get; set; }
+
+        /// <summary>
+        /// Culling setting.
+        /// </summary>
+        private bool IsCulling { get; set; }
 
         /// <summary>
         /// Bounds of <see cref="CubismRenderer.Mesh"/>.
@@ -56,6 +65,7 @@ namespace Live2D.Cubism.Rendering.Masking
         {
             MaskProperties = new MaterialPropertyBlock();
             MaskMaterial = CubismBuiltinMaterials.Mask;
+            MaskCullingMaterial = CubismBuiltinMaterials.MaskCulling;
         }
 
         #endregion
@@ -63,7 +73,7 @@ namespace Live2D.Cubism.Rendering.Masking
         #region Interface For CubismMaskMaskedJunction
 
         /// <summary>
-        /// Sets the <see cref="CubismRenderer"/> to reference. 
+        /// Sets the <see cref="CubismRenderer"/> to reference.
         /// </summary>
         /// <param name="value">Value to set.</param>
         /// <returns>Instance.</returns>
@@ -71,12 +81,13 @@ namespace Live2D.Cubism.Rendering.Masking
         {
             MainRenderer = value;
 
+            IsCulling = !(MainRenderer.gameObject.GetComponent<CubismDrawable>().IsDoubleSided);
 
             return this;
         }
 
         /// <summary>
-        /// Sets <see cref="CubismMaskTile"/>. 
+        /// Sets <see cref="CubismMaskTile"/>.
         /// </summary>
         /// <param name="value">Value to set.</param>
         /// <returns>Instance.</returns>
@@ -89,7 +100,7 @@ namespace Live2D.Cubism.Rendering.Masking
         }
 
         /// <summary>
-        /// Sets <see cref="CubismMaskTransform"/>. 
+        /// Sets <see cref="CubismMaskTransform"/>.
         /// </summary>
         /// <param name="value">Value to set.</param>
         /// <returns>Instance.</returns>
@@ -117,7 +128,11 @@ namespace Live2D.Cubism.Rendering.Masking
 
 
             // Add command.
-            buffer.DrawMesh(mesh, Matrix4x4.identity, MaskMaterial, 0, 0, MaskProperties);
+            buffer.DrawMesh(mesh, Matrix4x4.identity,
+                IsCulling
+                    ? MaskCullingMaterial
+                    : MaskMaterial,
+                0, 0, MaskProperties);
         }
 
         #endregion

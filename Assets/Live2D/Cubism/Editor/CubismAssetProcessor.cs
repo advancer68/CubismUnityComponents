@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -74,7 +74,7 @@ namespace Live2D.Cubism.Editor
             foreach (var assetPath in deletedAssetPaths)
             {
                 var deleter = CubismDeleter.GetDeleterAsPath(assetPath);
-                
+
                 if (deleter == null)
                 {
                     continue;
@@ -106,7 +106,7 @@ namespace Live2D.Cubism.Editor
                 var document = XDocument.Load(csproj);
                 var project = document.Root;
 
-                
+
                 // Allow unsafe code.
                 for (var propertyGroup = project.FirstNode as XElement; propertyGroup != null; propertyGroup = propertyGroup.NextNode as XElement)
                 {
@@ -187,6 +187,15 @@ namespace Live2D.Cubism.Editor
         }
 
         /// <summary>
+        /// Sets Cubism-style culling for a mask material.
+        /// </summary>
+        /// <param name="material">Material to set up.</param>
+        private static void EnableCulling(Material material)
+        {
+            material.SetInt("_Cull", (int)CullMode.Front);
+        }
+
+        /// <summary>
         /// Enables Cubism-style masking for a material.
         /// </summary>
         /// <param name="material">Material to set up.</param>
@@ -200,7 +209,7 @@ namespace Live2D.Cubism.Editor
             var shaderKeywords = material.shaderKeywords.ToList();
 
 
-            shaderKeywords.RemoveAll(k => k == "CUBISM_MASK_OFF");
+            shaderKeywords.Clear();
 
 
             if (!shaderKeywords.Contains("CUBISM_MASK_ON"))
@@ -212,6 +221,30 @@ namespace Live2D.Cubism.Editor
             material.shaderKeywords = shaderKeywords.ToArray();
         }
 
+        /// <summary>
+        /// Enables Cubism-style inverted mask for a material.
+        /// </summary>
+        /// <param name="material">Material to set up.</param>
+        private static void EnableInvertedMask(Material material)
+        {
+            // Set toggle.
+            material.SetInt("cubism_MaskOn", 1);
+            material.SetInt("cubism_InvertOn", 1);
+
+
+            // Enable keyword.
+            var shaderKeywords = material.shaderKeywords.ToList();
+
+            shaderKeywords.Clear();
+
+            if (!shaderKeywords.Contains("CUBISM_INVERT_ON"))
+            {
+                shaderKeywords.Add("CUBISM_INVERT_ON");
+            }
+
+
+            material.shaderKeywords = shaderKeywords.ToArray();
+        }
 
         /// <summary>
         /// Generates the builtin resources as necessary.
@@ -242,7 +275,17 @@ namespace Live2D.Cubism.Editor
                     name = "Mask"
                 };
 
-                        
+
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                // Create mask material.
+                material = new Material (CubismBuiltinShaders.Mask)
+                {
+                    name = "MaskCulling"
+                };
+
+                EnableCulling(material);
                 AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
 
 
@@ -302,6 +345,136 @@ namespace Live2D.Cubism.Editor
 
                 EnableMultiplicativeBlending(material);
                 EnableMasking(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                // Create inverted mask materials.
+                material = new Material (CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMaskedInverted"
+                };
+
+                EnableNormalBlending(material);
+                EnableInvertedMask(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material (CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitAdditiveMaskedInverted"
+                };
+
+                EnableAdditiveBlending(material);
+                EnableInvertedMask(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material (CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMultiplyMaskedInverted"
+                };
+
+                EnableMultiplicativeBlending(material);
+                EnableInvertedMask(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                // Create non-masked materials.
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitCulling"
+                };
+
+                EnableNormalBlending(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitAdditiveCulling"
+                };
+
+                EnableAdditiveBlending(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMultiplyCulling"
+                };
+
+                EnableMultiplicativeBlending(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                // Create masked materials.
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMaskedCulling"
+                };
+
+                EnableNormalBlending(material);
+                EnableMasking(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitAdditiveMaskedCulling"
+                };
+
+                EnableAdditiveBlending(material);
+                EnableMasking(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMultiplyMaskedCulling"
+                };
+
+                EnableMultiplicativeBlending(material);
+                EnableMasking(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                // Create inverted mask materials.
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMaskedInvertedCulling"
+                };
+
+                EnableNormalBlending(material);
+                EnableInvertedMask(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitAdditiveMaskedInvertedCulling"
+                };
+
+                EnableAdditiveBlending(material);
+                EnableInvertedMask(material);
+                EnableCulling(material);
+                AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
+
+
+                material = new Material(CubismBuiltinShaders.Unlit)
+                {
+                    name = "UnlitMultiplyMaskedInvertedCulling"
+                };
+
+                EnableMultiplicativeBlending(material);
+                EnableInvertedMask(material);
+                EnableCulling(material);
                 AssetDatabase.CreateAsset(material, string.Format("{0}/{1}.mat", materialsRoot, material.name));
 
 

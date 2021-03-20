@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 
@@ -16,7 +16,7 @@ namespace Live2D.Cubism.Framework.Physics
     /// Physics simulation controller.
     /// </summary>
     [CubismMoveOnReimportCopyComponentsOnly]
-    public class CubismPhysicsController : MonoBehaviour
+    public class CubismPhysicsController : MonoBehaviour, ICubismUpdatable
     {
         /// <summary>
         /// Simulation target rig.
@@ -38,6 +38,39 @@ namespace Live2D.Cubism.Framework.Physics
 
 
         /// <summary>
+        /// Model has update controller component.
+        /// </summary>
+        [HideInInspector]
+        public bool HasUpdateController { get; set; }
+
+
+        public int ExecutionOrder
+        {
+            get { return CubismUpdateExecutionOrder.CubismPhysicsController; }
+        }
+
+        public bool NeedsUpdateOnEditing
+        {
+            get { return false; }
+        }
+
+        public void OnLateUpdate()
+        {
+            var deltaTime = Time.deltaTime;
+
+
+            // Use fixed delta time if required.
+            if (CubismPhysics.UseFixedDeltaTime)
+            {
+                deltaTime = Time.fixedDeltaTime;
+            }
+
+
+            // Evaluate rig.
+            Rig.Evaluate(deltaTime);
+        }
+
+        /// <summary>
         /// Sets rig and initializes <see langword="this"/>.
         /// </summary>
         /// <param name="rig"></param>
@@ -55,12 +88,12 @@ namespace Live2D.Cubism.Framework.Physics
         /// </summary>
         public void Awake()
         {
-            // Check rig existance.
+            // Check rig existence.
             if (Rig == null)
             {
                 return;
             }
-            
+
 
             // Initialize rig.
             Rig.Controller = this;
@@ -78,24 +111,26 @@ namespace Live2D.Cubism.Framework.Physics
         }
 
         /// <summary>
+        /// Called by Unity.
+        /// </summary>
+        public void Start()
+        {
+            // Get cubism update controller.
+            HasUpdateController = (GetComponent<CubismUpdateController>() != null);
+        }
+
+        /// <summary>
         /// Called by Unity. Updates controller.
         /// </summary>
         /// <remarks>Must be call after animation update.</remarks>
         private void LateUpdate()
         {
-            var deltaTime = Time.deltaTime;
-
-
-            // Use fixed delta time if required.
-            if (CubismPhysics.UseFixedDeltaTime)
+            if (!HasUpdateController)
             {
-                deltaTime = Time.fixedDeltaTime;
+                OnLateUpdate();
             }
-
-
-            // Evaluate rig.
-            Rig.Evaluate(deltaTime);
         }
+
     #endregion
     }
 }

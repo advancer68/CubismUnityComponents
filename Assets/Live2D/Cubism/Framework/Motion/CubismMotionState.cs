@@ -1,8 +1,8 @@
-﻿/*
+﻿/**
  * Copyright(c) Live2D Inc. All rights reserved.
- * 
+ *
  * Use of this source code is governed by the Live2D Open Software license
- * that can be found at http://live2d.com/eula/live2d-open-software-license-agreement_en.html.
+ * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
 using UnityEngine;
@@ -73,7 +73,11 @@ namespace Live2D.Cubism.Framework.Motion
         public void ConnectClipMixer(AnimationMixerPlayable clipMixer)
         {
             var lastInput = ClipMixer.GetInputCount() - 1;
+#if UNITY_2018_2_OR_NEWER
             ClipMixer.DisconnectInput(lastInput);
+#else
+            ClipMixer.GetGraph().Disconnect(ClipMixer, lastInput);
+#endif
             ClipMixer.ConnectInput(lastInput, clipMixer, 0);
             ClipMixer.SetInputWeight(lastInput, 1.0f);
         }
